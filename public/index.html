@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiyor's Birthday Chaos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Poppins:wght@900&display=swap');
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+            transition: background 0.2s;
+        }
+        
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+            padding: 20px;
+            transition: all 0.5s;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 4px solid #000;
+            position: relative;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+
+        .img-frame {
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 3px solid #000;
+            margin-bottom: 1.5rem;
+            background-color: #eee;
+            position: relative;
+        }
+
+        .img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 4px 4px 0px #000;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
+            background-color: #f0f0f0;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        /* GLITCH EFFECTS */
+        .glitch-active body {
+            background-color: #000;
+        }
+        
+        .glitch-active .game-container {
+            background: #1a1a1a;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+        }
+
+        .glitch-active .card {
+            filter: invert(1);
+            animation: glitch-anim 0.3s infinite;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+            40%, 60% { transform: translate3d(8px, 0, 0); }
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(80% 0 10% 0); transform: translate(2px, -2px); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(20% 0 60% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(60% 0 20% 0); transform: translate(1px, 1px); }
+            100% { clip-path: inset(0 0 0 0); transform: translate(0, 0); }
+        }
+
+        /* FINAL SURPRISE STYLE */
+        .final-mode .game-container {
+            background: linear-gradient(135deg, #240b36 0%, #c31432 100%);
+            overflow: hidden;
+        }
+        
+        .final-text h1 {
+            font-size: 4rem;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px #ff00cc, 0 0 40px #ff00cc;
+            line-height: 1;
+            margin-bottom: 2rem;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        .final-text p {
+            font-size: 2rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); text-shadow: 0 0 20px #ff00cc; }
+            to { transform: scale(1.05); text-shadow: 0 0 50px #ff00cc, 0 0 80px #ff00cc; }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 100; /* Super high z-index */
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg) scale(1); }
+            100% { transform: translateY(110vh) rotate(720deg) scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="main-container">
+    <div id="game-card" class="card">
+        <!-- Content injected by JS -->
+    </div>
+</div>
+
+<script>
+    // Game Data Configuration
+    const scenes = {
+        start: {
+            img: 'tiyor7.jpg',
+            title: "Tiyor's Birthday Challenge",
+            text: "Welcome to the most important day of the year. Your goal: Don't ruin your own birthday party.",
+            choices: [
+                { text: "LETS GOOO!", next: 'scene1' }
+            ]
+        },
+        scene1: {
+            img: 'tiyor1.jpg',
+            title: "11:00 AM - The Wake Up",
+            text: "You just woke up. Your head hurts. The party starts at 4 PM. What's the first move?",
+            choices: [
+                { text: "Drink water & take a shower", next: 'scene2' },
+                { text: "Text your ex 'I miss u'", next: 'fail_ex' }
+            ]
+        },
+        fail_ex: {
+            img: 'tiyor3.jpg',
+            title: "GAME OVER: Emotional Damage",
+            text: "She left you on 'Read'. You cried for 4 hours and missed your own cake. Pathetic.",
+            choices: [],
+            isEnding: true
+        },
+        scene2: {
+            img: 'tiyor5.jpg',
+            title: "1:00 PM - The Fit Check",
+            text: "You're clean. Now you need a fit. What are we wearing to the function?",
+            choices: [
+                { text: "Fresh Black Tee & Jeans", next: 'scene3' },
+                { text: "Your Birthday Suit (Naked)", next: 'fail_jail' }
+            ]
+        },
+        fail_jail: {
+            img: 'tiyor6.jpg',
+            title: "GAME OVER: Jail Time",
+            text: "The neighbors called the police immediately. You are spending your birthday in a holding cell.",
+            choices: [],
+            isEnding: true
+        },
+        scene3: {
+            img: 'tiyor2.jpg',
+            title: "3:30 PM - Transport",
+            text: "You look fresh. Time to head to the venue. How are we getting there?",
+            choices: [
+                { text: "Call an Uber Black", next: 'scene4' },
+                { text: "Call Don for a ride", next: 'encounter_don' }
+            ]
+        },
+        encounter_don: {
+            img: 'don.png',
+            title: "A Wild Don Appears",
+            text: "Don pulls up in a sketchy van. He says: 'Get in, we're going to the library to study Calculus.'",
+            choices: [
+                { text: "Get in the van", next: 'fail_nerd' },
+                { text: "RUN AWAY", next: 'scene4' }
+            ]
+        },
+        fail_nerd: {
+            img: 'tiyor.png',
+            title: "GAME OVER: Nerd Ending",
+            text: "Don locked the doors. You spent your birthday solving integrals. You are now a nerd.",
+            choices: [],
+            isEnding: true
+        },
+        scene4: {
+            img: 'tiyor4.jpg',
+            title: "4:00 PM - The Arrival",
+            text: "You made it to the party! Everyone screams 'HAPPY BIRTHDAY!'. The cake comes out.",
+            choices: [
+                { text: "Blow out the candles", next: 'win' },
+                { text: "Sneeze on the cake", next: 'fail_sneeze' }
+            ]
+        },
+        fail_sneeze: {
+            img: 'tiyor.jpg',
+            title: "GAME OVER: Covid Hazard",
+            text: "You sneezed directly on the cake. Everyone left in disgust. You ate the whole cake alone.",
+            choices: [],
+            isEnding: true
+        },
+        win: {
+            img: 'tiyor7.jpg',
+            title: "VICTORY: LEGENDARY STATUS",
+            text: "You blew out the candles, got all the girls, and didn't get arrested! BEST BIRTHDAY EVER!",
+            choices: [],
+            isEnding: true
+        }
+    };
+
+    const gameCard = document.getElementById('game-card');
+    const container = document.getElementById('main-container');
+
+    function renderScene(sceneId) {
+        const scene = scenes[sceneId];
+        
+        let choicesHtml = '';
+        if (scene.choices.length > 0) {
+            scene.choices.forEach(choice => {
+                choicesHtml += `<button class="btn" onclick="renderScene('${choice.next}')">${choice.text}</button>`;
+            });
+        }
+
+        const imageHtml = `
+            <div class="img-frame">
+                <img src="${scene.img}" alt="Scene Image" onerror="this.src='https://placehold.co/400x400?text=Missing+Image'">
+            </div>
+        `;
+
+        gameCard.innerHTML = `
+            ${imageHtml}
+            <h1>${scene.title}</h1>
+            <p>${scene.text}</p>
+            <div class="choices-container">
+                ${choicesHtml}
+            </div>
+        `;
+
+        if (scene.isEnding) {
+            setTimeout(triggerGlitchSurprise, 2500);
+        }
+    }
+
+    function triggerGlitchSurprise() {
+        document.body.classList.add('glitch-active');
+        
+        setTimeout(() => {
+            document.body.classList.remove('glitch-active');
+            document.body.classList.add('final-mode');
+            
+            // REMOVING THE CARD STYLE AND IMAGE FOR THE FINAL SCREEN
+            gameCard.style.background = 'transparent';
+            gameCard.style.boxShadow = 'none';
+            gameCard.style.border = 'none';
+            gameCard.className = 'final-text'; // Apply final text styles
+            
+            gameCard.innerHTML = `
+                <h1>HAPPY BIRTHDAY DIYOR!</h1>
+                <p>WE ALWAYS GOT UR BACK BRO ❤️</p>
+                <br>
+                <button class="btn" style="border:none; background:white; color:black; max-width:200px; margin: 0 auto;" onclick="location.reload()">AGAIN?</button>
+            `;
+            
+            // MASSIVE CONFETTI
+            startMassiveConfetti();
+            
+        }, 800);
+    }
+
+    function startMassiveConfetti() {
+        // Initial explosion
+        spawnConfetti(200);
+        // Constant rain
+        setInterval(() => spawnConfetti(50), 500);
+    }
+
+    function spawnConfetti(amount) {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#ff00cc', '#ffffff'];
+        for (let i = 0; i < amount; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            // Random positioning and sizing
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.width = (Math.random() * 15 + 5) + 'px';
+            confetti.style.height = (Math.random() * 15 + 5) + 'px';
+            
+            // Varying speeds
+            const duration = Math.random() * 2 + 1.5;
+            confetti.style.animationDuration = duration + 's';
+            
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            if (Math.random() > 0.5) confetti.style.borderRadius = '50%';
+            
+            document.body.appendChild(confetti);
+            
+            // Cleanup
+            setTimeout(() => confetti.remove(), duration * 1000);
+        }
+    }
+
+    renderScene('start');
+
+</script>
+</body>
+</html>
